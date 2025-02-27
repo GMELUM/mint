@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"mint/config"
+	"mint/shared/middleware"
 	"mint/utils/wallet"
 	"time"
 
@@ -20,7 +21,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found") // Log the absence as informational, not as an error
 	}
-	
+
 	// Use defer and recover to handle panics gracefully.
 	// Defer ensures the function is called at the end of main, recovering from any panic that might occur during runtime.
 	defer func() {
@@ -36,8 +37,10 @@ func main() {
 
 	w = entity
 
+	gin.SetMode(gin.ReleaseMode)
+
 	// Create a new Gin engine instance with default middleware: logger and recovery.
-	engine := gin.Default()
+	engine := gin.New()
 
 	// Configure CORS (Cross-Origin Resource Sharing) to manage requests from different domains.
 	engine.Use(cors.New(cors.Config{
@@ -50,7 +53,7 @@ func main() {
 	}))
 
 	// Define a POST route to handle withdrawal requests.
-	engine.POST("withdraw", handlerWithdraw)
+	engine.POST("withdraw", middleware.Secret, handlerWithdraw)
 
 	// Attempt to run the server on the specified host and port.
 	// fmt.Sprintf is used to create a formatted string for the address.

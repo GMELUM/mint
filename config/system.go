@@ -12,4 +12,9 @@ var (
 	// It is determined based on the environment variable "HOST".
 	// If not set, it defaults to "0.0.0.0".
 	Host = env.GetEnvString("HOST", "0.0.0.0")
+
+	// Secret is used for security purposes, such as signing tokens or encrypting sensitive data.
+	// This value is retrieved from the environment variable "SECRET".
+	// If the environment variable is not set, it defaults to a predefined string.
+	Secret = env.GetEnvString("SECRET", "")
 )
