@@ -5,6 +5,8 @@ import (
 	"log"
 	"mint/config"
 	"mint/shared/middleware"
+	"mint/utils/mysql"
+	"mint/utils/queue"
 	"mint/utils/wallet"
 	"time"
 
@@ -13,7 +15,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var w *wallet.Wallet
+// mysqlConfig defines MySQL configuration using values from the config package.
+// This includes key parameters needed for establishing connections and optimizing performance.
+var mysqlConfig = mysql.Options{
+	Host:           config.MySQLHost,           // MySQL server hostname or IP
+	Username:       config.MySQLUsername,       // MySQL user for authentication
+	Password:       config.MySQLPassword,       // Password for the MySQL user
+	Database:       config.MySQLDatabase,       // Target database name
+	Port:           config.MySQLPort,           // MySQL server port
+	MaxConnections: config.MySQLMaxConnections, // Max concurrent connections to MySQL
+	CacheEnabled:   config.MySQLCacheEnabled,   // Enable/disable query caching
+	Cache:          mysql.NewInMemoryStorage(), // Storage for caching queries
+	Mutex:          mysql.NewLocalMutex(),      // Mutex for resource coordination
+}
 
 func main() {
 
@@ -30,12 +44,19 @@ func main() {
 		}
 	}()
 
-	entity, err := wallet.New(config.WalletWords, "https://ton.org/global.config.json")
+	// Initialize MySQL connection with specified configuration.
+	_, err := mysql.New(mysqlConfig)
+	if err != nil {
+		panic(err.Error()) // Panic if MySQL initialization fails
+	}
+
+	_, err = wallet.New(config.WalletWords, "https://ton.org/global.config.json")
 	if err != nil {
 		panic(err) // Log any error that occurs during wallet initialization
 	}
 
-	w = entity
+	go queue.Sheldule()
+	go queue.Callback()
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -54,6 +75,7 @@ func main() {
 
 	// Define a POST route to handle withdrawal requests.
 	engine.POST("withdraw", middleware.Secret, handlerWithdraw)
+	engine.POST("callback", handlerReceiveSuccess)
 
 	// Attempt to run the server on the specified host and port.
 	// fmt.Sprintf is used to create a formatted string for the address.

@@ -17,4 +17,9 @@ var (
 	// This value is retrieved from the environment variable "SECRET".
 	// If the environment variable is not set, it defaults to a predefined string.
 	Secret = env.GetEnvString("SECRET", "")
+
+	// CallbackURL is used to specify the URL to which callbacks should be sent.
+	// This value is retrieved from the environment variable "CALLBACK_URL".
+	// If the environment variable is not set, it defaults to an empty string.
+	CallbackURL = env.GetEnvString("CALLBACK_URL", "")
 )
