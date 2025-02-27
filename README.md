@@ -11,6 +11,7 @@ This project provides an API for managing transactions with TON wallets.
   - `WALLET_WORDS`: Seed words for wallet recovery or generation, separated by spaces.
   - `WALLET_DESTINATION`: The wallet address for processing transactions.
   - `WALLET_JETTON`: The identifier for the token or jetton used in transactions.
+  - `SECRET`: A security key required for all API requests, to be sent via the Authorization header or as a query parameter.
 
 ### Example `.env` File
 
@@ -22,6 +23,7 @@ HOST=0.0.0.0
 WALLET_WORDS="your seed words here"
 WALLET_DESTINATION=your_wallet_destination_address
 WALLET_JETTON=your_jetton_identifier
+SECRET=your_secret_key
 ```
 
 ## Installation and Running
@@ -49,27 +51,48 @@ The server will be accessible at `http://<HOST>:<PORT>`.
 
 ## API Usage
 
+### Authentication
+
+All API requests must include the `SECRET` for authentication purposes. This can be provided in one of the following ways:
+- **Authorization Header:**
+
+  Include the `SECRET` as a Bearer token in the HTTP Authorization header:
+  ```http
+  Authorization: your_secret_key
+  ```
+
+- **Query Parameter:**
+
+  Include the `SECRET` as a query parameter in the request URL:
+  ```http
+  http://<HOST>:<PORT>/withdraw?secret=your_secret_key
+  ```
+
 ### Withdraw Request
 
 - **Route:** `POST /withdraw`
 - **Request Body:**
 
-```json
-{
-  "wallet": "recipient_wallet_address",
-  "amount": 1000, // the amount to withdraw must be greater than zero
-  "message": "Transaction message" // optional message for the transaction
-}
-```
+  The body of the request should contain the following JSON fields:
+
+  ```json
+  {
+    "wallet": "recipient_wallet_address",
+    "amount": 1000, // the amount to withdraw must be greater than zero
+    "message": "Transaction message" // optional message for the transaction
+  }
+  ```
 
 ### Successful Response
 
 - **Format:**
 
-```json
-{
-  "response": {
-    "tx_hash": "LdSOGgjcvBuAPmCIEsL8Z48H8LvEiXXRFMxaeYSJeF4="
+  Upon successful execution of the withdrawal request, the response will be formatted as follows:
+
+  ```json
+  {
+    "response": {
+      "tx_hash": "LdSOGgjcvBuAPmCIEsL8Z48H8LvEiXXRFMxaeYSJeF4="
+    }
   }
-}
-```
+  ```
