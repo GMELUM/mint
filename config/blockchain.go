@@ -6,7 +6,7 @@ var (
 	// WalletWords holds an array of seed words used for wallet recovery or generation.
 	// These words are retrieved from the environment variable "WALLET_WORDS",
 	// split by spaces. If the environment variable is not set, it defaults to an empty slice.
-	WalletWords = env.GetEnvArrayString("WALLET_WORDS", " ", []string{})
+	WalletWords = env.GetEnvArrayString("WALLET_WORDS", ",", []string{})
 
 	// WalletDestination specifies the wallet address for transactions.
 	// This value is retrieved from the environment variable "WALLET_DESTINATION".
