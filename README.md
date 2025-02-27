@@ -56,7 +56,7 @@ The server will be accessible at `http://<HOST>:<PORT>`.
 All API requests must include the `SECRET` for authentication purposes. This can be provided in one of the following ways:
 - **Authorization Header:**
 
-  Include the `SECRET` as a Bearer token in the HTTP Authorization header:
+  Include the `SECRET` as a token in the HTTP Authorization header:
   ```http
   Authorization: your_secret_key
   ```
@@ -93,6 +93,22 @@ All API requests must include the `SECRET` for authentication purposes. This can
   {
     "response": {
       "tx_hash": "LdSOGgjcvBuAPmCIEsL8Z48H8LvEiXXRFMxaeYSJeF4="
+    }
+  }
+  ```
+
+### Error Response
+
+When an error occurs, the response will contain an `error` object with the following format:
+
+- **Error Format:**
+
+  ```json
+  {
+    "error": {
+      "code": 123,             // Numeric error code
+      "message": "Error message", // Description of the error
+      "critical": true            // Indicates if the error is critical; omitted if false
     }
   }
   ```
